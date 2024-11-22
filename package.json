@@ -1,0 +1,25 @@
+{
+  "name": "@madari-moviedb/loader",
+  "packageManager": "yarn@4.5.1",
+  "type": "module",
+  "scripts": {
+    "dev:main": "tsx src/cmd/main.ts",
+    "dev:episode": "tsx src/cmd/episodes.ts"
+  },
+  "dependencies": {
+    "semaphore-promise": "^1.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "wtf_wikipedia": "^10.3.2"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "@elastic/elasticsearch": "^8.16.1",
+    "@types/node": "^22.9.1",
+    "prettier": "^3.3.3",
+    "vitest": "^2.1.5"
+  }
+}
