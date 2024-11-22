@@ -2,7 +2,7 @@ import { ExtraSectionHandler } from './ExtraSectionHandler.js';
 import { Entity } from '../entity.js';
 import { WikiItem } from '../source.js';
 import { Document } from 'wtf_wikipedia';
-import { Season } from '../types/Season.js';
+import { SeasonEntity } from '../types/SeasonEntity.js';
 import { Episode } from '../types/Episode.js';
 
 export class SeasonExtractor implements ExtraSectionHandler<Entity> {
@@ -30,7 +30,7 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
       const seasonNumber = this.getSeasonNumber(section.title());
       if (seasonNumber !== null) {
         const seasonId = `${data.page_id}-${seasonNumber}`;
-        const season: Season = {
+        const season: SeasonEntity = {
           id: seasonId,
           lang: data.language,
           type: 'season',
@@ -42,9 +42,9 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
 
         let currentEpisode: Partial<Episode> = {};
 
-        for (const template of (
+        for (const template of ((
           section.json({}) as never as { templates: { template: string }[] }
-        ).templates) {
+        ).templates || [])) {
           if (template.template === 'episode list') {
             currentEpisode = {
               ...currentEpisode,
@@ -87,6 +87,7 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
             episode.seasonId = seasonId;
 
             episode.id = `${seasonId}-ep-${episode.episodeNumber}`;
+            episode.type = 'episode';
 
             entities.push(episode);
             currentEpisode = {};

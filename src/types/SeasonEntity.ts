@@ -1,6 +1,6 @@
 import { Entity } from '../entity.js';
 
-export interface Season extends Entity {
+export interface SeasonEntity extends Entity {
   title?: string;
   seasonNumber?: number;
 }

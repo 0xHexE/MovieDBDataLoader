@@ -1,14 +1,13 @@
-import { Entity, IdType } from '../entity.js';
-import { Wiki, WikiItem } from '../source.js';
+import { Entity } from '../entity.js';
+import { WikiItem } from '../source.js';
 import { Strategy } from '../strategy.js';
 // @ts-ignore
 import wtf, { Document, Section } from 'wtf_wikipedia';
-import { SeasonExtractor } from '../extra/SeasonExtractor.js';
-import { ExtraSectionHandler } from '../extra/ExtraSectionHandler.js';
 import { MediaSection } from './Media.js';
 import { extractSections } from '../utils/extract-sections.js';
+import { SeasonEntity } from '../types/SeasonEntity.js';
 
-export interface Episode extends Entity {
+export interface EpisodeEntity extends Entity {
   episodeNumber: string;
   episodeNumber2?: string;
   title?: string;
@@ -28,14 +27,15 @@ export class Season implements Strategy {
     number: number,
     seasonNumber: number,
     input: WikiItem,
-  ): Episode[] {
+  ): EpisodeEntity[] {
     return Array.from({ length: number }).map((_, index) => {
       return {
         episodeNumber: index.toString(),
         id: `${this.parentId}-${seasonNumber}-ep-${index + 1}`,
         type: 'episode',
         lang: input.language,
-      } satisfies Episode;
+        parentId: this.parentId + '-' + seasonNumber,
+      } satisfies EpisodeEntity;
     });
   }
 
@@ -52,7 +52,7 @@ export class Season implements Strategy {
     const media = wtf(input.source_text);
     const section = media.section('Episodes') || media.section('Episode list');
     const sectionJson = section?.json();
-    let episodes: Episode[] = [];
+    let episodes: EpisodeEntity[] = [];
 
     const infoBox = media.section('')?.infoboxes()?.[0]?.json();
 
@@ -71,7 +71,19 @@ export class Season implements Strategy {
       );
 
       if (numEpisodes) {
-        return this.createEmptyEpisodes(+numEpisodes, seasonNumber, input);
+        const season = {
+          parentId: this.parentId,
+          type: 'season',
+          id: this.parentId + '-' + seasonNumber,
+          lang: input.language,
+          seasonNumber: seasonNumber,
+          title: seasonNumber?.toString(),
+        } satisfies SeasonEntity;
+
+        return [
+          season,
+          ...this.createEmptyEpisodes(+numEpisodes, seasonNumber, input),
+        ];
       }
 
       Season.failed++;
@@ -114,7 +126,7 @@ export class Season implements Strategy {
             type: 'episode',
             lang: input.language,
             id: `${this.parentId}-${seasonNumber}-ep-${template.episodenumber}`,
-          }) satisfies Episode,
+          }) satisfies EpisodeEntity,
       );
     } else {
       console.warn(

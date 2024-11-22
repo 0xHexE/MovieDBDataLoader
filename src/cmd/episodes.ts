@@ -4,6 +4,7 @@ import {
   getSeries,
 } from '../get-list-of-movies-from-wikidata.js';
 import { Season } from '../strategy/Season.js';
+import { indexes } from '../data/indexes.js';
 
 // @ts-ignore
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -30,7 +31,7 @@ await queryElasticsearchBatched(
       .flat();
 
     const operations = movie.flatMap((doc) => [
-      { index: { _index: 'temp2', _id: doc.id } },
+      { index: { _index: indexes[doc.type], _id: doc.id } },
       doc,
     ]);
 

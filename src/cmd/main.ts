@@ -1,6 +1,7 @@
 import { client, queryElasticsearchBatched } from '../utils.js';
 import { getAllMovieAndSeriesIds } from '../get-list-of-movies-from-wikidata.js';
 import { Media } from '../strategy/Media.js';
+import { indexes } from '../data/indexes.js';
 
 // @ts-ignore
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -21,10 +22,9 @@ await queryElasticsearchBatched(
       })
       .flat();
 
-    const operations = movie.flatMap((doc) => [
-      { index: { _index: 'temp', _id: doc.id } },
-      doc,
-    ]);
+    const operations = movie.flatMap((doc) => {
+      return [{ index: { _index: indexes[doc.type], _id: doc.id } }, doc];
+    });
     await client.bulk({ refresh: true, operations });
   },
 );

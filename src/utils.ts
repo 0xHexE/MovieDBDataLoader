@@ -9,7 +9,7 @@ interface SearchOptions {
 }
 
 export const client = new elastic.Client({
-  node: 'https://localhost:9200',
+  node: process.env.ELASTIC_URL ?? 'https://localhost:9200',
   auth: {
     username: process.env.ELASTIC_USERNAME,
     password: process.env.ELASTIC_PASSWORD,
