@@ -29,9 +29,10 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
     for (const section of sections) {
       const seasonNumber = this.getSeasonNumber(section.title());
       if (seasonNumber !== null) {
-        const seasonId = `${data.page_id}-${seasonNumber}`;
+        const seasonId = `${data.wikibase_item}-${seasonNumber}`;
         const season: SeasonEntity = {
           id: seasonId,
+          parentId: data.wikibase_item,
           lang: data.language,
           type: 'season',
           title: section.title(),

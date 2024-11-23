@@ -62,6 +62,15 @@ export class Season implements Strategy {
       1;
     const numEpisodes: number = infoBox?.num_episodes?.number;
 
+    const season = {
+      parentId: this.parentId,
+      type: 'season',
+      id: `${this.parentId}-${seasonNumber}`,
+      lang: input.language,
+      seasonNumber: seasonNumber,
+      title: seasonNumber?.toString(),
+    } satisfies SeasonEntity;
+
     if (!sectionJson) {
       console.warn(
         `No "Episodes" section found or could not parse JSON. ${input.wikibase_item} ${media
@@ -71,15 +80,6 @@ export class Season implements Strategy {
       );
 
       if (numEpisodes) {
-        const season = {
-          parentId: this.parentId,
-          type: 'season',
-          id: this.parentId + '-' + seasonNumber,
-          lang: input.language,
-          seasonNumber: seasonNumber,
-          title: seasonNumber?.toString(),
-        } satisfies SeasonEntity;
-
         return [
           season,
           ...this.createEmptyEpisodes(+numEpisodes, seasonNumber, input),
@@ -121,7 +121,7 @@ export class Season implements Strategy {
             writtenBy: template.writtenby,
             originalAirDate: template.originalairdate,
             shortSummary: template.shortsummary,
-            parentId: this.parentId!,
+            parentId: season.id,
             sections: extractSections(input, media),
             type: 'episode',
             lang: input.language,

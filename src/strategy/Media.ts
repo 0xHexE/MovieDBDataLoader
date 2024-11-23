@@ -39,7 +39,7 @@ export class Media implements Strategy {
     return [
       ...items,
       {
-        id: input.page_id,
+        id: input.wikibase_item,
         title: media.title() ?? undefined,
         meta: this.extractMeta(input, media),
         type: 'media',
