@@ -85,7 +85,7 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
             }
 
             const episode: Episode = currentEpisode as Episode;
-            episode.seasonId = seasonId;
+            episode.parentId = seasonId;
 
             episode.id = `${seasonId}-ep-${episode.episodeNumber}`;
             episode.type = 'episode';

@@ -397,23 +397,6 @@ export class Media implements Strategy {
 
     return MediaType.MOVIE;
   }
-
-  private extractTitleFromURL(url: string): string | undefined {
-    try {
-      const urlParsed = new URL(url);
-      if (urlParsed.hostname === 'web.archive.org') {
-        const index = urlParsed.pathname.indexOf('http');
-
-        if (index !== -1) {
-          return urlParsed.pathname.substring(index);
-        }
-      }
-
-      return urlParsed.hostname;
-    } catch (e) {
-      return;
-    }
-  }
 }
 
 export interface MediaEntity extends Entity {
