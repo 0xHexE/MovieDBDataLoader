@@ -3,9 +3,9 @@ import { WikiItem } from '../source.js';
 import { Strategy } from '../strategy.js';
 // @ts-ignore
 import wtf, { Document, Section } from 'wtf_wikipedia';
-import { MediaSection } from './Media.js';
 import { extractSections } from '../utils/extract-sections.js';
 import { SeasonEntity } from '../types/SeasonEntity.js';
+import { MediaSection } from '../types/Media.js';
 
 export interface EpisodeEntity extends Entity {
   episodeNumber: string;
