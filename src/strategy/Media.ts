@@ -1,12 +1,19 @@
 import { Strategy } from '../strategy.js';
 // @ts-ignore
 import wtf, { Document } from 'wtf_wikipedia';
-import { Entity, IdType } from '../entity.js';
+import { Entity } from '../entity.js';
 import { WikiItem } from '../source.js';
 import { SeasonExtractor } from '../extra/SeasonExtractor.js';
 import { ExtraSectionHandler } from '../extra/ExtraSectionHandler.js';
 import { extractSections } from '../utils/extract-sections.js';
-import { Award, ExternalIds, MediaEntity, MediaMeta, MediaType, RelatedMedia } from '../types/Media.js';
+import {
+  Award,
+  ExternalIds,
+  MediaEntity,
+  MediaMeta,
+  MediaType,
+  RelatedMedia,
+} from '../types/Media.js';
 
 export class Media implements Strategy {
   private static CREW_ROLES = [
@@ -50,10 +57,11 @@ export class Media implements Strategy {
         mediaType: this.extractType(input, media),
         sections: extractSections(input, media),
         originalTitle: input.title,
-        region: this.extractRegion(input)?.map(res => ({
-          continent: res[0],
-          region: res[1],
-        })) ?? [],
+        region:
+          this.extractRegion(input)?.map((res) => ({
+            continent: res[0],
+            region: res[1],
+          })) ?? [],
         lang: input.language,
         popularity: {
           wiki: input.popularity_score,
@@ -136,13 +144,17 @@ export class Media implements Strategy {
 
   private extractRegion(item: WikiItem) {
     return item.weighted_tags
-      ?.filter(res => res?.startsWith('classification.ores.articletopic/Geography.Regions'))
-      ?.map(res => {
-        return res.replace('classification.ores.articletopic/Geography.Regions', '')
+      ?.filter((res) =>
+        res?.startsWith('classification.ores.articletopic/Geography.Regions'),
+      )
+      ?.map((res) => {
+        return res
+          .replace('classification.ores.articletopic/Geography.Regions', '')
           .replaceAll('*', '')
           .split('|')?.[0]
           ?.split('.')
-      })
+          .filter((res) => Boolean(res));
+      });
   }
 
   private extractCrew(media: Document, roles: string | string[]): string[] {
