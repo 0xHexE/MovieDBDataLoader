@@ -136,8 +136,8 @@ export class Media implements Strategy {
 
   private extractRegion(item: WikiItem) {
     return item.weighted_tags
-      .filter(res => res?.startsWith('classification.ores.articletopic/Geography.Regions'))
-      .map(res => {
+      ?.filter(res => res?.startsWith('classification.ores.articletopic/Geography.Regions'))
+      ?.map(res => {
         return res.replace('classification.ores.articletopic/Geography.Regions', '')
           .replaceAll('*', '')
           .split('|')?.[0]
