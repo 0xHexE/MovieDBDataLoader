@@ -50,10 +50,10 @@ export class Media implements Strategy {
         mediaType: this.extractType(input, media),
         sections: extractSections(input, media),
         originalTitle: input.title,
-        region: this.extractRegion(input).map(res => ({
+        region: this.extractRegion(input)?.map(res => ({
           continent: res[0],
           region: res[1],
-        })),
+        })) ?? [],
         lang: input.language,
         popularity: {
           wiki: input.popularity_score,
