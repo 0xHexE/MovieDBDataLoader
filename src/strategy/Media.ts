@@ -75,7 +75,6 @@ export class Media implements Strategy {
           'story by',
         ]),
         crew: this.extractCrew(media, Media.CREW_ROLES),
-        starring: this.extractStarring(media),
         genre: this.extractGenres(media),
         budget: this.extractBudget(media),
         runningTime: this.extractRunningTime(media),
@@ -188,35 +187,6 @@ export class Media implements Strategy {
       }
       // If no links, just clean up the text and handle conjunctions
       return person
-        .split(/\s*(?:and|&)\s*/)
-        .map((p) => p.trim())
-        .filter((p) => p);
-    });
-  }
-
-  private extractStarring(media: Document): string[] {
-    const infobox = media.infobox();
-    if (!infobox) return [];
-
-    const starringData = infobox.get('starring');
-    if (!starringData) return [];
-
-    const starringText = (starringData as Document).text();
-    if (!starringText) return [];
-
-    // Handle cases with multiple actors separated by commas or line breaks
-    const actors = starringText
-      .split(/[,<br>]|\n/)
-      .map((a) => a.trim())
-      .filter((a) => a);
-
-    // Process each actor to remove wiki markup if present
-    return actors.flatMap((actor) => {
-      const matches = [...actor.matchAll(Media.PERSON_LINK_REGEX)];
-      if (matches.length > 0) {
-        return matches.map((match) => match[2].trim());
-      }
-      return actor
         .split(/\s*(?:and|&)\s*/)
         .map((p) => p.trim())
         .filter((p) => p);

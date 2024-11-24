@@ -4,6 +4,7 @@ import { WikiItem } from '../source.js';
 import { Document } from 'wtf_wikipedia';
 import { SeasonEntity } from '../types/SeasonEntity.js';
 import { Episode } from '../types/Episode.js';
+import { Season } from '../strategy/Season.js';
 
 export class SeasonExtractor implements ExtraSectionHandler<Entity> {
   seasonSectionTitles = [
@@ -13,7 +14,7 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
   ];
 
   hasSupport(modules: string[]) {
-    const supported = ['Module:Episode table/styles.css'];
+    const supported = ['Module:Episode table/styles.css', 'Template:Episode list'];
 
     return (
       modules.findIndex((item) => {
@@ -23,7 +24,9 @@ export class SeasonExtractor implements ExtraSectionHandler<Entity> {
   }
 
   extract(data: WikiItem, media: Document): Entity[] {
-    const entities: Entity[] = [];
+    const season = new Season(data.wikibase_item);
+    const entities: Entity[] = [...season.parse(data)];
+
     const sections = media.sections();
 
     for (const section of sections) {

@@ -1,8 +1,5 @@
 import { client, queryElasticsearchBatched } from '../utils.js';
-import {
-  getAllMovieAndSeriesIds,
-  getSeries,
-} from '../get-list-of-movies-from-wikidata.js';
+import { getSeries } from '../get-list-of-movies-from-wikidata.js';
 import { Season } from '../strategy/Season.js';
 import { indexes } from '../data/indexes.js';
 
@@ -34,6 +31,11 @@ await queryElasticsearchBatched(
       { index: { _index: indexes[doc.type], _id: doc.id } },
       doc,
     ]);
+
+    if (operations.length === 0) {
+      console.log('No operations');
+      return;
+    }
 
     await client.bulk({ refresh: true, operations });
   },
