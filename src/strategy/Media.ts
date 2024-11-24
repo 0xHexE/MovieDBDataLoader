@@ -6,6 +6,7 @@ import { WikiItem } from '../source.js';
 import { SeasonExtractor } from '../extra/SeasonExtractor.js';
 import { ExtraSectionHandler } from '../extra/ExtraSectionHandler.js';
 import { extractSections } from '../utils/extract-sections.js';
+import { Award, ExternalIds, MediaEntity, MediaMeta, MediaType, RelatedMedia } from '../types/Media.js';
 
 export class Media implements Strategy {
   private static CREW_ROLES = [
@@ -49,6 +50,10 @@ export class Media implements Strategy {
         mediaType: this.extractType(input, media),
         sections: extractSections(input, media),
         originalTitle: input.title,
+        region: this.extractRegion(input).map(res => ({
+          continent: res[0],
+          region: res[1],
+        })),
         lang: input.language,
         popularity: {
           wiki: input.popularity_score,
@@ -127,6 +132,17 @@ export class Media implements Strategy {
     }
 
     return trailers;
+  }
+
+  private extractRegion(item: WikiItem) {
+    return item.weighted_tags
+      .filter(res => res?.startsWith('classification.ores.articletopic/Geography.Regions'))
+      .map(res => {
+        return res.replace('classification.ores.articletopic/Geography.Regions', '')
+          .replaceAll('*', '')
+          .split('|')?.[0]
+          ?.split('.')
+      })
   }
 
   private extractCrew(media: Document, roles: string | string[]): string[] {
@@ -397,100 +413,4 @@ export class Media implements Strategy {
 
     return MediaType.MOVIE;
   }
-}
-
-export interface MediaEntity extends Entity {
-  id: IdType;
-  type: 'media';
-  title?: string;
-  description?: string;
-  originalTitle?: string;
-  sections: MediaSection[];
-  mediaType: MediaType;
-  meta: MediaMeta;
-  externalIds: ExternalIds;
-  links: string[];
-  region?: MediaRegion[];
-  popularity: MediaPopularity;
-  urls: MediaWikiUrls[];
-  relatedMedia?: RelatedMedia;
-  posterImage?: string;
-  trailers?: string[];
-  director?: string[];
-  producer?: string[];
-  writer?: string[];
-  crew?: string[];
-  starring?: string[];
-  genre?: string[];
-  budget?: string;
-  runningTime?: string;
-  plotSummary?: string;
-  awards?: Award[];
-}
-
-export interface RelatedMedia {
-  sequels?: string[];
-  prequels?: string[];
-  followedBy?: string;
-  precededBy?: string;
-}
-
-export interface Award {
-  name?: string;
-  year?: number;
-  category?: string;
-  result: string;
-  recipient?: string;
-  nameIds: string[];
-  nominee?: string;
-  nomineeIds: string[];
-}
-
-export type MediaWikiUrls = string;
-
-export interface MediaPopularity {
-  wiki?: number;
-}
-
-export interface MediaRegion {
-  continent: string;
-  region: string;
-}
-
-export interface ExternalIds {
-  imdbID?: string;
-  tvguide?: string;
-  allmovieID?: string;
-}
-
-export interface MediaMeta {
-  [record: string]: {
-    text?: string[];
-    number?: number;
-    date?: Date;
-    links?: {
-      page?: string;
-      text?: string;
-    }[];
-  };
-}
-
-export interface MediaSection {
-  title: string;
-  originalTitle: string;
-  content: string;
-}
-
-export interface Cast {
-  actorId?: string;
-  character?: string;
-}
-
-export enum MediaType {
-  MOVIE = 'movie',
-  SERIES = 'series',
-  ANIME = 'anime',
-  DOCUMENTARY = 'documentary',
-  TV_SPECIAL = 'tv-special',
-  SHORT_FILM = 'short-film',
 }
